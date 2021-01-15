@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PositionService {
-    @Getter
     @Autowired
     private PositionRepository repository;
 

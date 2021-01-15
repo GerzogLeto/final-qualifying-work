@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 @Entity
@@ -20,7 +21,7 @@ public class Freight extends Identity {
     private int weight;
     @Getter
     @Setter
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfLoadingCargo;
     @Getter
@@ -29,9 +30,13 @@ public class Freight extends Identity {
     private LocalDateTime timeOfLoadingCargo;
     @Getter
     @Setter
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfUnloadingCargo;
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    private LocalDateTime timeOfUnloadingCargo;
     @Getter
     @Setter
     @Column(nullable = false)
