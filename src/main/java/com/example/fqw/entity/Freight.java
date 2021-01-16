@@ -1,13 +1,12 @@
 package com.example.fqw.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 @Entity
 public class Freight extends Identity {
@@ -22,20 +21,20 @@ public class Freight extends Identity {
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfLoadingCargo;
     @Getter
     @Setter
     @Column(nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timeOfLoadingCargo;
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfUnloadingCargo;
     @Getter
     @Setter
     @Column(nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timeOfUnloadingCargo;
     @Getter
     @Setter

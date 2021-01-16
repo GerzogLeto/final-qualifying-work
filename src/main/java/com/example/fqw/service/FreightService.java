@@ -1,7 +1,9 @@
 package com.example.fqw.service;
 
 import com.example.fqw.entity.Freight;
+import com.example.fqw.entity.Position;
 import com.example.fqw.exception.FreightException;
+import com.example.fqw.exception.PositionException;
 import com.example.fqw.repository.FreightRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,15 +17,20 @@ public class FreightService {
     private FreightRepository repository;
 
     public Freight add(Freight freight){
-        System.out.println("--serializing--");
-        ObjectMapper om = new ObjectMapper();
-        try {
-            System.out.println(om.writeValueAsString(freight));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
         if(repository.existsById(freight.getId()))
             throw new FreightException("Запись уже существует.");
+        return repository.save(freight);
+    }
+
+    public void delete(long id){
+        if (!repository.existsById(id)) throw new PositionException("Запись не существует");
+        repository.deleteById(id);
+    }
+
+    public Freight update(Freight freight){
+        if(!repository.existsById(freight.getId())){
+            throw new FreightException("Запись не существует");
+        }
         return repository.save(freight);
     }
 }

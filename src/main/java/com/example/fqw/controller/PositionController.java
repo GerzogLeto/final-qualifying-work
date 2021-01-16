@@ -5,10 +5,7 @@ import com.example.fqw.exception.PositionException;
 import com.example.fqw.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -26,5 +23,25 @@ public class PositionController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
         return saved;
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable int id) {
+        try {
+            service.delete(id);
+        } catch (PositionException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @PutMapping
+    public Position updatePosition(@RequestBody Position position) {
+        Position updated;
+        try {
+            updated = service.update(position);
+        } catch (PositionException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+        return updated;
     }
 }
