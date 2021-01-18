@@ -11,6 +11,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class FreightService {
     @Autowired
@@ -32,5 +34,11 @@ public class FreightService {
             throw new FreightException("Запись не существует");
         }
         return repository.save(freight);
+    }
+
+    public Optional<Freight> getById(long id) {
+        Optional<Freight> optionalFreight = repository.findById(id);
+        if (optionalFreight.isEmpty()) throw new FreightException("Запись не существует");
+        return optionalFreight;
     }
 }

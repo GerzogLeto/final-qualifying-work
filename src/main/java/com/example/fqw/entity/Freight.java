@@ -21,6 +21,7 @@ public class Freight extends Identity {
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfLoadingCargo;
     @Getter
     @Setter
@@ -30,6 +31,7 @@ public class Freight extends Identity {
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position placeOfUnloadingCargo;
     @Getter
     @Setter
