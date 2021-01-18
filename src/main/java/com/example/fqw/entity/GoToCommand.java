@@ -4,6 +4,7 @@ import com.example.fqw.entity.Identity;
 import com.example.fqw.entity.Position;
 import com.example.fqw.logic.CommandTypes;
 import com.example.fqw.logic.ICommand;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Getter;
@@ -23,18 +24,21 @@ public class GoToCommand extends Identity implements ICommand {
     private LocalDateTime timeStart;
     @Getter
     @Setter
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timeFinish;
     @Getter
     @Setter
     @Column(nullable = false)
-    private long ID_Truck;
+    private long idTruck;
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position posStart;
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position posFinish;
     @Getter
     @Setter
@@ -42,6 +46,15 @@ public class GoToCommand extends Identity implements ICommand {
     @Getter
     @Setter
     private int duration;
+    @Getter
+    @Setter
+    private boolean current;
+    @Getter
+    @Setter
+    private boolean archive;
+    @Getter
+    @Setter
+    private boolean future;
 
     @Override
     public CommandTypes getCommandType() {
