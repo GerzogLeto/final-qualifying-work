@@ -4,11 +4,13 @@ import com.example.fqw.entity.Identity;
 import com.example.fqw.entity.Position;
 import com.example.fqw.logic.CommandTypes;
 import com.example.fqw.logic.ICommand;
+import com.example.fqw.logic.StatusCommand;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,7 +24,6 @@ public class GoToCommand extends Identity implements ICommand {
     @Column(nullable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timeStart;
-    @Getter
     @Setter
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime timeFinish;
@@ -48,13 +49,9 @@ public class GoToCommand extends Identity implements ICommand {
     private int duration;
     @Getter
     @Setter
-    private boolean current;
-    @Getter
-    @Setter
-    private boolean archive;
-    @Getter
-    @Setter
-    private boolean future;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusCommand statusCommand;
 
     @Override
     public CommandTypes getCommandType() {
@@ -64,5 +61,57 @@ public class GoToCommand extends Identity implements ICommand {
     @Override
     public LocalDateTime getTimeStart() {
         return timeStart;
+    }
+
+    @Override
+    public LocalDateTime getTimeFinish() {
+        return timeFinish;
+    }
+
+    public void setDistance() {
+        if(posStart.getStart().equals(posFinish.getStart())&&
+                posStart.getFinish().equals(posFinish.getFinish())){
+            this.distance = Math.abs(posFinish.getDistFromStart()-
+                    posStart.getDistFromStart());
+            return;
+        }
+        if(posStart.getStart().equals(posFinish.getFinish())&&
+        posStart.getFinish().equals(posFinish.getStart())){
+            String temp = posStart.getFinish();
+            posStart.setFinish(posStart.getStart());
+            posStart.setStart(temp);
+            posStart.setDistFromStart(posStart.getTotalDist() -
+                    posStart.getDistFromStart());
+            setDistance();
+            return;
+        }
+        if(posStart.getStart().equals(posFinish.getStart())&&
+                !(posStart.getFinish().equals(posFinish.getFinish()))){
+            this.distance = posStart.getDistFromStart() + posFinish.getDistFromStart();
+            return;
+        }
+
+        if(posStart.getStart().equals(posFinish.getFinish())&&
+                !(posStart.getFinish().equals(posFinish.getStart()))){
+            this.distance = posStart.getDistFromStart() + posFinish.getTotalDist() - posFinish.getDistFromStart();
+            return;
+        }
+
+        if(posStart.getFinish().equals(posFinish.getStart())&&
+                !(posStart.getStart().equals(posFinish.getFinish()))){
+            this.distance = posStart.getTotalDist() - posStart.getDistFromStart() + posFinish.getDistFromStart();
+            return;
+        }
+
+        if(posStart.getFinish().equals(posFinish.getFinish())&&
+                !(posStart.getStart().equals(posFinish.getStart()))){
+            this.distance = posStart.getTotalDist() - posStart.getDistFromStart() +
+                    posFinish.getTotalDist() - posFinish.getDistFromStart();
+            return;
+        }
+    }
+
+    public void setUpDuration(int speed){
+        this.duration =(int)((double)this.distance / speed * 60);
     }
 }

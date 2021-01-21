@@ -31,15 +31,12 @@ public class TruckController {
 
     @PostMapping
     public Truck addTruck (@RequestParam(value = "truck") String truck,
-                             @RequestParam(value = "positionId") long positionId,
-                             @RequestParam(value = "freightId") long freightId){
+                             @RequestParam(value = "positionId") long positionId){
         Truck truckFromJSON;
         Truck saved = null;
         try {
             truckFromJSON = mapper.readValue(truck, Truck.class);
-            truckFromJSON.setPosition(positionService.getById(positionId).get());
-            truckFromJSON.setFreight(freightService.getById(freightId).get());
-            saved = service.add(truckFromJSON);
+            truckFromJSON.setPosition(positionService.getById(positionId).get());            saved = service.add(truckFromJSON);
         } catch (TruckException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
@@ -52,14 +49,12 @@ public class TruckController {
 
     @PutMapping
     public Truck updateTruck (@RequestParam(value = "truck") String truck,
-                           @RequestParam(value = "positionId") long positionId,
-                           @RequestParam(value = "freightId") long freightId){
+                           @RequestParam(value = "positionId") long positionId){
         Truck truckFromJSON;
         Truck updated = null;
         try {
             truckFromJSON = mapper.readValue(truck, Truck.class);
             truckFromJSON.setPosition(positionService.getById(positionId).get());
-            truckFromJSON.setFreight(freightService.getById(freightId).get());
             updated = service.update(truckFromJSON);
         } catch (TruckException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);

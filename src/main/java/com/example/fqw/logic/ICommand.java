@@ -6,4 +6,9 @@ public interface ICommand {
     CommandTypes getCommandType();
 
     LocalDateTime getTimeStart();
+
+    StatusCommand getStatusCommand();
+
+    LocalDateTime getTimeFinish();
+
 }

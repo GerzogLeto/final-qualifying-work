@@ -20,12 +20,10 @@ public class TruckService {
             throw new TruckException("Запись уже существует.");
         DefaultProperties defaultProperties = new DefaultProperties();
         truck.setMileageNextRepair(truck.getMileage() +
-                Integer.valueOf(defaultProperties.getProperties().getProperty("mileage_between_repairs")));
+                Integer.parseInt(defaultProperties.getProperties().getProperty("mileage_between_repairs")));
         truck.setFuelTankCapacity(Integer.
-                valueOf(defaultProperties.getProperties().getProperty("fuel_tank_capacity")));
+                parseInt(defaultProperties.getProperties().getProperty("fuel_tank_capacity")));
         Truck saved = repository.save(truck);
-        saved.getFreight().getPlaceOfLoadingCargo();
-        saved.getFreight().getDurationOfUnLoadingCargo();
         return saved;
     }
 
