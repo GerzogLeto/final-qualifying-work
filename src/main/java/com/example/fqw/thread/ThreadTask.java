@@ -1,13 +1,11 @@
 package com.example.fqw.thread;
 
-import com.example.fqw.entity.GoToCommand;
-import com.example.fqw.entity.Truck;
+import com.example.fqw.entity.*;
 import com.example.fqw.logic.DefaultProperties;
 import com.example.fqw.logic.ICommand;
 import com.example.fqw.logic.Invoker;
 import com.example.fqw.logic.StatusCommand;
-import com.example.fqw.repository.GoToCommandRepository;
-import com.example.fqw.repository.TruckRepository;
+import com.example.fqw.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +16,13 @@ import java.util.Optional;
 //@Scope("prototype")
 public class ThreadTask implements Runnable {
     @Autowired
-    private GoToCommandRepository commandRepository;
+    private GoToCommandRepository goToCommandRepository;
+    @Autowired
+    private RefuelCommandRepository refuelCommandRepository;
+    @Autowired
+    private RepairCommandRepository repairCommandRepository;
+    @Autowired
+    private LoadCommandRepository loadCommandRepository;
     @Autowired
     private TruckRepository truckRepository;
 
@@ -38,6 +42,17 @@ public class ThreadTask implements Runnable {
                             command.getCommandType() + " has been completed. State needs to be changed");
                     //отправить тек комманду на выполнение для измен состояния грузовика
                     //сделать вып команду архивной
+                    Invoker invoker = new Invoker();
+                    invoker.setDefaultProperties(new DefaultProperties());
+                    invoker.setTruck(truck);
+                    invoker.setCommand(command);
+                    invoker.setTruckRepo(this.truckRepository);
+                    invoker.setGoToCommandRepo(this.goToCommandRepository);
+                    invoker.setRefuelCommandRepo(this.refuelCommandRepository);
+                    invoker.setRepairCommandRepo(this.repairCommandRepository);
+                    invoker.setLoadCommandRepo(this.loadCommandRepository);
+                    invoker.changeStateTruck();
+
 
                 }
 
@@ -48,8 +63,9 @@ public class ThreadTask implements Runnable {
                 //доинициализировать комманду
                 //сделать команду текущей
 
-                ICommand iCommand = getNextCurrentCommand(truck.getId());
-                if(iCommand==null){
+
+                command = getNextCurrentCommand(truck.getId());
+                if(command==null){
                     System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
                             " ### " + truck.getId() + " there is no suitable command for the current role");
 
@@ -61,9 +77,12 @@ public class ThreadTask implements Runnable {
                     Invoker invoker = new Invoker();
                     invoker.setDefaultProperties(new DefaultProperties());
                     invoker.setTruck(truck);
-                    invoker.setCommand(iCommand);
+                    invoker.setCommand(command);
                     invoker.setTruckRepo(this.truckRepository);
-                    invoker.setGoToCommandRepo(this.commandRepository);
+                    invoker.setGoToCommandRepo(this.goToCommandRepository);
+                    invoker.setRefuelCommandRepo(this.refuelCommandRepository);
+                    invoker.setRepairCommandRepo(this.repairCommandRepository);
+                    invoker.setLoadCommandRepo(this.loadCommandRepository);
                     invoker.initCurrentCommand();
                 }
             }
@@ -80,18 +99,44 @@ public class ThreadTask implements Runnable {
     }
 
     public ICommand findCurrentCommand(long id) {
-        Optional<GoToCommand> goToCommand = commandRepository.findByIdTruckAndStatusCurrent(id,
+        Optional<GoToCommand> goToCommand = goToCommandRepository.findByIdTruckAndStatusCurrent(id,
+                StatusCommand.CURRENT);
+        Optional<RefuelCommand> refuelCommand = refuelCommandRepository.findByIdTruckAndStatusCurrent(id,
+                StatusCommand.CURRENT);
+        Optional<RepairCommand> repairCommand = repairCommandRepository.findByIdTruckAndStatusCurrent(id,
+                StatusCommand.CURRENT);
+        Optional<LoadCommand> loadCommand = loadCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
         if (!(goToCommand.isEmpty())) return goToCommand.get();
+        if (!(refuelCommand.isEmpty())) return refuelCommand.get();
+        if (!(repairCommand.isEmpty())) return repairCommand.get();
+        if (!(loadCommand.isEmpty())) return loadCommand.get();
         return null;
     }
 
     public ICommand getNextCurrentCommand(long idTruck){
         for (GoToCommand goToCommand :
-                commandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
+                goToCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
             if(!(checkTimeStart(goToCommand.getTimeStart()))){
-//                goToCommand.setStatusCommand(StatusCommand.CURRENT);
                 return goToCommand;
+            }
+        }
+        for (RefuelCommand refuelCommand :
+                refuelCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
+            if(!(checkTimeStart(refuelCommand.getTimeStart()))){
+                return refuelCommand;
+            }
+        }
+        for (RepairCommand repairCommand :
+                repairCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
+            if(!(checkTimeStart(repairCommand.getTimeStart()))){
+                return repairCommand;
+            }
+        }
+        for (LoadCommand loadCommand :
+                loadCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
+            if(!(checkTimeStart(loadCommand.getTimeStart()))){
+                return loadCommand;
             }
         }
         return null;

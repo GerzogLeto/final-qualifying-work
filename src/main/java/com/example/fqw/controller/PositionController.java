@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+//@CrossOrigin
 @RestController
 @RequestMapping("/positions")
 public class PositionController {
@@ -43,5 +45,16 @@ public class PositionController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
         return updated;
+    }
+
+    @GetMapping("/{id}")
+    public Position getById(@PathVariable int id) {
+        Optional<Position> position;
+        try {
+            position = service.getById(id);
+        } catch (PositionException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        return position.get();
     }
 }
