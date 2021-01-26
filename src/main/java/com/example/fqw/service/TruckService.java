@@ -20,6 +20,21 @@ public class TruckService {
     public Truck add(Truck truck){
         if(repository.existsById(truck.getId()))
             throw new TruckException("Запись уже существует.");
+        if(truck.getName().length() < 3){
+            throw new TruckException("В названии грузовика меньше 3 букв");
+        }
+        if(truck.getNumber().length() < 3){
+            throw new TruckException("Номер грузовика содержит менее 4 символов");
+        }
+        if(truck.getCapacity() <= 0){
+            throw new TruckException("Грузоподьемность должна быть больше 0");
+        }
+        if(truck.getMileage() < 0){
+            throw new TruckException("Пробег не может быть меньше нуля");
+        }
+        if(truck.getAmountOfFuel() < 0){
+            throw new TruckException("Количество топлива не может быть меньше нуля");
+        }
         DefaultProperties defaultProperties = new DefaultProperties();
         truck.setMileageNextRepair(truck.getMileage() +
                 Integer.parseInt(defaultProperties.getProperties().getProperty("mileage_between_repairs")));
@@ -38,6 +53,22 @@ public class TruckService {
         if(!repository.existsById(truck.getId())){
             throw new TruckException("Запись не существует");
         }
+        if(truck.getName().length() < 3){
+            throw new TruckException("В названии грузовика меньше 3 букв");
+        }
+        if(truck.getNumber().length() < 3){
+            throw new TruckException("Номер грузовика содержит менее 4 символов");
+        }
+        if(truck.getCapacity() <= 0){
+            throw new TruckException("Грузоподьемность должна быть больше 0");
+        }
+        if(truck.getMileage() < 0){
+            throw new TruckException("Пробег не может быть меньше нуля");
+        }
+        if(truck.getAmountOfFuel() < 0){
+            throw new TruckException("Количество топлива не может быть меньше нуля");
+        }
+
         return repository.save(truck);
     }
 

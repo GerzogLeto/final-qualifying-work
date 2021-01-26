@@ -18,6 +18,21 @@ public class PositionService {
         if(repository.existsById(position.getId())){
             throw new PositionException("Запись уже существует");
         }
+        if(position.getStart().length()<3){
+            throw new PositionException("В названии города меньше 3 букв");
+        }
+        if(position.getFinish().length()<3){
+            throw new PositionException("В названии города меньше 3 букв");
+        }
+        if(position.getDistFromStart() < 0){
+            throw new PositionException("Расстояние от точки старта меньше 0!");
+        }
+        if(position.getTotalDist() <= 0){
+            throw new PositionException("Общая дистанция меньше или равна 0!");
+        }
+        if(position.getDistFromStart() > position.getTotalDist()){
+            throw new PositionException("Расстояние от точки старта больше общей дистанции!");
+        }
         return repository.save(position);
     }
 
@@ -35,6 +50,21 @@ public class PositionService {
     public Position update(Position position){
         if(!repository.existsById(position.getId())){
             throw new PositionException("Запись не существует");
+        }
+        if(position.getStart().length()<3){
+            throw new PositionException("В названии города меньше 3 букв");
+        }
+        if(position.getFinish().length()<3){
+            throw new PositionException("В названии города меньше 3 букв");
+        }
+        if(position.getDistFromStart() < 0){
+            throw new PositionException("Расстояние от точки старта меньше 0!");
+        }
+        if(position.getTotalDist() <= 0){
+            throw new PositionException("Общая дистанция меньше или равна 0!");
+        }
+        if(position.getDistFromStart() > position.getTotalDist()){
+            throw new PositionException("Расстояние от точки старта больше общей дистанции!");
         }
         return repository.save(position);
     }

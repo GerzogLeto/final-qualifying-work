@@ -8,6 +8,7 @@ import com.example.fqw.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,9 @@ public class CommandManagerController {
             saved = goToCommandService.add(commandFromJSON);
         }catch (GoToCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
-        } catch (JsonMappingException e) {
+        } catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -58,6 +61,8 @@ public class CommandManagerController {
         try{
             saved = refuelCommandService.add(mapper.readValue(command, RefuelCommand.class));
         }catch (RefuelCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
@@ -74,6 +79,8 @@ public class CommandManagerController {
             saved = repairCommandService.add(mapper.readValue(command, RepairCommand.class));
         }catch (RepairCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -89,6 +96,8 @@ public class CommandManagerController {
             saved = loadCommandService.add(mapper.readValue(command, LoadCommand.class));
         }catch (LoadCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -103,6 +112,8 @@ public class CommandManagerController {
         try{
             saved = unloadCommandService.add(mapper.readValue(command, UnloadCommand.class));
         }catch (UnloadCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
@@ -124,6 +135,8 @@ public class CommandManagerController {
             updated = goToCommandService.update(commandFromJSON);
         }catch (GoToCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -138,6 +151,8 @@ public class CommandManagerController {
         try{
             updated = refuelCommandService.update(mapper.readValue(command, RefuelCommand.class));
         }catch (RefuelCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
@@ -154,6 +169,8 @@ public class CommandManagerController {
             updated = repairCommandService.update(mapper.readValue(command, RepairCommand.class));
         }catch (RepairCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -169,6 +186,8 @@ public class CommandManagerController {
             updated = loadCommandService.update(mapper.readValue(command, LoadCommand.class));
         }catch (LoadCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -183,6 +202,8 @@ public class CommandManagerController {
         try{
             updated = unloadCommandService.update(mapper.readValue(command, UnloadCommand.class));
         }catch (UnloadCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }catch(InvalidFormatException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();

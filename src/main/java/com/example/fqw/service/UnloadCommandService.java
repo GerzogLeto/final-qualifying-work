@@ -1,9 +1,11 @@
 package com.example.fqw.service;
 
-import com.example.fqw.entity.LoadCommand;
 import com.example.fqw.entity.UnloadCommand;
+import com.example.fqw.exception.FreightException;
 import com.example.fqw.exception.LoadCommandException;
+import com.example.fqw.exception.TruckException;
 import com.example.fqw.exception.UnloadCommandException;
+import com.example.fqw.logic.CommandTypes;
 import com.example.fqw.logic.StatusCommand;
 import com.example.fqw.repository.FreightRepository;
 import com.example.fqw.repository.UnloadCommandRepository;
@@ -19,14 +21,29 @@ public class UnloadCommandService {
 
     @Autowired
     private FreightRepository freightRepository;
+    @Autowired
+    private TruckService truckService;
+    @Autowired
+    private FreightService freightService;
 
     public UnloadCommand add(UnloadCommand command){
         if(repository.existsById(command.getId()))
             throw new UnloadCommandException("Запись уже существует.");
+        if(!(command.getCommandType().equals(CommandTypes.UNLOAD))){
+            throw new UnloadCommandException("Некорректный тип команды");
+        }
+        try{
+            truckService.getById(command.getIdTruck());
+            freightService.getById(command.getIdFreight());
+        }catch (TruckException e){
+            throw new UnloadCommandException("Грузовик с указанным ИД не существует");
+        }catch (FreightException e){
+            throw new UnloadCommandException("Груз с указанным ИД не существует");
+        }
         command.setStatusCommand(StatusCommand.FUTURE);
         command.setTimeStart(freightRepository.findById(command.getIdFreight()).get().getTimeOfUnloadingCargo());
         command.setTimeFinish(command.getTimeStart().
-                plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfUnLoadingCargo()));
+                plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfUnloadingCargo()));
         UnloadCommand saved = repository.save(command);
         return saved;
     }
@@ -35,10 +52,21 @@ public class UnloadCommandService {
         if(!repository.existsById(command.getId())){
             throw new UnloadCommandException("Запись не существует");
         }
+        if(!(command.getCommandType().equals(CommandTypes.UNLOAD))){
+            throw new UnloadCommandException("Некорректный тип команды");
+        }
+        try{
+            truckService.getById(command.getIdTruck());
+            freightService.getById(command.getIdFreight());
+        }catch (TruckException e){
+            throw new UnloadCommandException("Грузовик с указанным ИД не существует");
+        }catch (FreightException e){
+            throw new UnloadCommandException("Груз с указанным ИД не существует");
+        }
         command.setStatusCommand(StatusCommand.FUTURE);
         command.setTimeStart(freightRepository.findById(command.getIdFreight()).get().getTimeOfUnloadingCargo());
         command.setTimeFinish(command.getTimeStart().
-                plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfUnLoadingCargo()));
+                plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfUnloadingCargo()));
         return repository.save(command);
     }
 

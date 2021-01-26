@@ -75,13 +75,13 @@ public class TruckController {
 
     @GetMapping("/{id}")
     public Truck getById(@PathVariable int id) {
-        Optional<Truck> optionalCourse;
+        Optional<Truck> optionalTruck;
         try {
-            optionalCourse = service.getById(id);
+            optionalTruck = service.getById(id);
         } catch (TruckException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return optionalCourse.get();
+        return optionalTruck.get();
     }
 
     @DeleteMapping("/{id}")

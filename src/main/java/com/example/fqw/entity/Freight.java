@@ -45,7 +45,7 @@ public class Freight extends Identity {
     @Getter
     @Setter
     @Column(nullable = false)
-    private long durationOfUnLoadingCargo;
+    private long durationOfUnloadingCargo;
     @Getter
     @Setter
     @Column(nullable = false)
