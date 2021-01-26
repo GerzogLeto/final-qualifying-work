@@ -10,6 +10,8 @@ import com.example.fqw.repository.TruckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TruckService {
     @Autowired
@@ -37,5 +39,15 @@ public class TruckService {
             throw new TruckException("Запись не существует");
         }
         return repository.save(truck);
+    }
+
+    public Iterable<Truck> getAll(){
+        return repository.findAll();
+    }
+
+    public Optional<Truck> getById(long id) {
+        Optional<Truck> optionalCourse = repository.findById(id);
+        if (optionalCourse.isEmpty()) throw new TruckException("Запись не существует");
+        return optionalCourse;
     }
 }

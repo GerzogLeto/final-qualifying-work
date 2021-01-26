@@ -34,6 +34,9 @@ public class Invoker {
     @Getter
     @Setter
     private LoadCommandRepository loadCommandRepo;
+    @Getter
+    @Setter
+    private UnloadCommandRepository unloadCommandRepo;
 
     public void changeStateTruck(){
         switch (command.getCommandType()){
@@ -79,6 +82,15 @@ public class Invoker {
                 loadCommandRepo.save(loadCommand);
                 break;
             }
+
+            case UNLOAD -> {
+                UnloadCommand unloadCommand = (UnloadCommand)command;
+                truck.setFreight(null);
+                truckRepo.save(truck);
+                unloadCommand.setStatusCommand(StatusCommand.ARCHIVE);
+                unloadCommandRepo.save(unloadCommand);
+                break;
+            }
         }
     }
 
@@ -111,6 +123,13 @@ public class Invoker {
                 LoadCommand loadCommand = (LoadCommand)command;
                 loadCommand.setStatusCommand(StatusCommand.CURRENT);
                 loadCommandRepo.save(loadCommand);
+                break;
+            }
+
+            case UNLOAD -> {
+                UnloadCommand unloadCommand = (UnloadCommand)command;
+                unloadCommand.setStatusCommand(StatusCommand.CURRENT);
+                unloadCommandRepo.save(unloadCommand);
                 break;
             }
 

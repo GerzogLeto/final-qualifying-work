@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/trucks")
 public class TruckController {
@@ -36,7 +38,8 @@ public class TruckController {
         Truck saved = null;
         try {
             truckFromJSON = mapper.readValue(truck, Truck.class);
-            truckFromJSON.setPosition(positionService.getById(positionId).get());            saved = service.add(truckFromJSON);
+            truckFromJSON.setPosition(positionService.getById(positionId).get());
+            saved = service.add(truckFromJSON);
         } catch (TruckException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
@@ -64,6 +67,21 @@ public class TruckController {
             e.printStackTrace();
         }
         return updated;
+    }
+    @GetMapping
+    public Iterable<Truck> getAll(){
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Truck getById(@PathVariable int id) {
+        Optional<Truck> optionalCourse;
+        try {
+            optionalCourse = service.getById(id);
+        } catch (TruckException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        return optionalCourse.get();
     }
 
     @DeleteMapping("/{id}")

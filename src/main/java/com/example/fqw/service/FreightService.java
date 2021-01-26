@@ -21,6 +21,7 @@ public class FreightService {
     public Freight add(Freight freight){
         if(repository.existsById(freight.getId()))
             throw new FreightException("Запись уже существует.");
+        freight.setOpen(true);
         return repository.save(freight);
     }
 
@@ -40,5 +41,9 @@ public class FreightService {
         Optional<Freight> optionalFreight = repository.findById(id);
         if (optionalFreight.isEmpty()) throw new FreightException("Запись не существует");
         return optionalFreight;
+    }
+
+    public Iterable<Freight> findByLoadPlace(String start){
+        return repository.findByLoadPlace(start);
     }
 }

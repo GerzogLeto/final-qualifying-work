@@ -50,5 +50,9 @@ public class Freight extends Identity {
     @Setter
     @Column(nullable = false)
     private int cost;
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    private boolean open;
 
 }

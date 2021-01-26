@@ -24,7 +24,11 @@ public class ThreadTask implements Runnable {
     @Autowired
     private LoadCommandRepository loadCommandRepository;
     @Autowired
+    private UnloadCommandRepository unloadCommandRepository;
+    @Autowired
     private TruckRepository truckRepository;
+    @Autowired
+    private FreightRepository freightRepository;
 
     @Override
     public void run() {
@@ -51,6 +55,8 @@ public class ThreadTask implements Runnable {
                     invoker.setRefuelCommandRepo(this.refuelCommandRepository);
                     invoker.setRepairCommandRepo(this.repairCommandRepository);
                     invoker.setLoadCommandRepo(this.loadCommandRepository);
+                    invoker.setUnloadCommandRepo(this.unloadCommandRepository);
+                    invoker.setFreightRepo(this.freightRepository);
                     invoker.changeStateTruck();
 
 
@@ -83,6 +89,8 @@ public class ThreadTask implements Runnable {
                     invoker.setRefuelCommandRepo(this.refuelCommandRepository);
                     invoker.setRepairCommandRepo(this.repairCommandRepository);
                     invoker.setLoadCommandRepo(this.loadCommandRepository);
+                    invoker.setUnloadCommandRepo(this.unloadCommandRepository);
+                    invoker.setFreightRepo(this.freightRepository);
                     invoker.initCurrentCommand();
                 }
             }
@@ -107,10 +115,13 @@ public class ThreadTask implements Runnable {
                 StatusCommand.CURRENT);
         Optional<LoadCommand> loadCommand = loadCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
+        Optional<UnloadCommand> unloadCommand = unloadCommandRepository.findByIdTruckAndStatusCurrent(id,
+                StatusCommand.CURRENT);
         if (!(goToCommand.isEmpty())) return goToCommand.get();
         if (!(refuelCommand.isEmpty())) return refuelCommand.get();
         if (!(repairCommand.isEmpty())) return repairCommand.get();
         if (!(loadCommand.isEmpty())) return loadCommand.get();
+        if (!(unloadCommand.isEmpty())) return unloadCommand.get();
         return null;
     }
 
@@ -137,6 +148,12 @@ public class ThreadTask implements Runnable {
                 loadCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
             if(!(checkTimeStart(loadCommand.getTimeStart()))){
                 return loadCommand;
+            }
+        }
+        for (UnloadCommand unloadCommand :
+                unloadCommandRepository.findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, StatusCommand.FUTURE)) {
+            if(!(checkTimeStart(unloadCommand.getTimeStart()))){
+                return unloadCommand;
             }
         }
         return null;

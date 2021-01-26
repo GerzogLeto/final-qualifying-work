@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -62,6 +63,19 @@ public class FreightController {
         }
         return updated;
     }
+
+    @GetMapping //http://localhost:8080/freights?city=Moscow
+    public Iterable<Freight> getByLoadPlace(@RequestParam String city) {
+        Iterable<Freight> freights;
+        try {
+            freights  = service.findByLoadPlace(city);
+        } catch (FreightException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        return freights;
+    }
+
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable int id) {
         try {

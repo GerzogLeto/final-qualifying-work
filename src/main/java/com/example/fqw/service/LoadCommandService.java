@@ -10,6 +10,8 @@ import com.example.fqw.repository.LoadCommandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoadCommandService {
     @Autowired
@@ -24,6 +26,7 @@ public class LoadCommandService {
         command.setTimeStart(freightRepository.findById(command.getIdFreight()).get().getTimeOfLoadingCargo());
         command.setTimeFinish(command.getTimeStart().
                 plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfLoadingCargo()));
+        freightRepository.findById(command.getIdFreight()).get().setOpen(false);
         LoadCommand saved = repository.save(command);
         return saved;
     }
@@ -36,7 +39,20 @@ public class LoadCommandService {
         command.setTimeStart(freightRepository.findById(command.getIdFreight()).get().getTimeOfLoadingCargo());
         command.setTimeFinish(command.getTimeStart().
                 plusHours(freightRepository.findById(command.getIdFreight()).get().getDurationOfLoadingCargo()));
+        freightRepository.findById(command.getIdFreight()).get().setOpen(false);
         return repository.save(command);
+    }
+
+    public LoadCommand getCommandsByIdTruckByStatusCurrent(long idTruck, StatusCommand status) {
+        Optional<LoadCommand> optional = repository.findByIdTruckAndStatusCurrent(idTruck, status);
+        if (optional.isEmpty()) return null;
+        return optional.get();
+    }
+
+    public Iterable<LoadCommand> getCommandsByIdTruckByStatus(long idTruck, StatusCommand status){
+        Iterable<LoadCommand> commands = repository.
+                findByIdTruckAndStatusFutureBySortedByTimeStart(idTruck, status);
+        return commands;
     }
 
     public void delete(long id){

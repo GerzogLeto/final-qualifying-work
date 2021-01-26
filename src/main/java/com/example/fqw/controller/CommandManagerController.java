@@ -1,13 +1,9 @@
 package com.example.fqw.controller;
 
-import com.example.fqw.entity.GoToCommand;
-import com.example.fqw.entity.LoadCommand;
-import com.example.fqw.entity.RefuelCommand;
-import com.example.fqw.entity.RepairCommand;
-import com.example.fqw.exception.GoToCommandException;
-import com.example.fqw.exception.LoadCommandException;
-import com.example.fqw.exception.RefuelCommandException;
-import com.example.fqw.exception.RepairCommandException;
+import com.example.fqw.entity.*;
+import com.example.fqw.exception.*;
+import com.example.fqw.logic.ICommand;
+import com.example.fqw.logic.StatusCommand;
 import com.example.fqw.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -16,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/command-manager")
@@ -28,6 +27,8 @@ public class CommandManagerController {
     private RepairCommandService repairCommandService;
     @Autowired
     private LoadCommandService loadCommandService;
+    @Autowired
+    private UnloadCommandService unloadCommandService;
     @Autowired
     private PositionService positionService;
     @Autowired
@@ -87,6 +88,21 @@ public class CommandManagerController {
         try{
             saved = loadCommandService.add(mapper.readValue(command, LoadCommand.class));
         }catch (LoadCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return saved;
+    }
+
+    @PostMapping("/unload")
+    public UnloadCommand addUnloadCommand(@RequestParam(value = "command") String command){
+        UnloadCommand saved = null;
+        try{
+            saved = unloadCommandService.add(mapper.readValue(command, UnloadCommand.class));
+        }catch (UnloadCommandException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         } catch (JsonMappingException e) {
             e.printStackTrace();
@@ -161,6 +177,84 @@ public class CommandManagerController {
         return updated;
     }
 
+    @PutMapping("/unload")
+    public UnloadCommand updateUnloadCommand(@RequestParam(value = "command") String command){
+        UnloadCommand updated = null;
+        try{
+            updated = unloadCommandService.update(mapper.readValue(command, UnloadCommand.class));
+        }catch (UnloadCommandException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return updated;
+    }
+    @GetMapping //http://localhost:8080/command-manager?idTruck=1&status=current
+    public Iterable<ICommand> getCommandsByIdTruckByStatus(@RequestParam long idTruck,
+                                                           @RequestParam String status){
+        List<ICommand> commands = new ArrayList<>();
+        if(status.toLowerCase().equals(StatusCommand.CURRENT.name().toLowerCase())){
+            ICommand command = goToCommandService.getCommandsByIdTruckByStatusCurrent(idTruck, StatusCommand.CURRENT);
+            if(!(command == null)){
+                commands.add(command);
+                return commands ;
+            }
+            command = refuelCommandService.getCommandsByIdTruckByStatusCurrent(idTruck, StatusCommand.CURRENT);
+            if(!(command == null)){
+                commands.add(command);
+                return commands ;
+            }
+            command = repairCommandService.getCommandsByIdTruckByStatusCurrent(idTruck, StatusCommand.CURRENT);
+            if(!(command == null)){
+                commands.add(command);
+                return commands ;
+            }
+            command = loadCommandService.getCommandsByIdTruckByStatusCurrent(idTruck, StatusCommand.CURRENT);
+            if(!(command == null)){
+                commands.add(command);
+                return commands ;
+            }
+            command = unloadCommandService.getCommandsByIdTruckByStatusCurrent(idTruck, StatusCommand.CURRENT);
+            if(!(command == null)){
+                commands.add(command);
+                return commands ;
+            }
+        }
+        for (GoToCommand goToCommand :
+                goToCommandService.getCommandsByIdTruckByStatus(idTruck,
+                        StatusCommand.valueOf(status.toUpperCase()))) {
+            commands.add(goToCommand);
+        }
+
+        for (RefuelCommand refuelCommand :
+                refuelCommandService.getCommandsByIdTruckByStatus(idTruck,
+                        StatusCommand.valueOf(status.toUpperCase()))) {
+            commands.add(refuelCommand);
+        }
+
+        for (RepairCommand repairCommand :
+                repairCommandService.getCommandsByIdTruckByStatus(idTruck,
+                        StatusCommand.valueOf(status.toUpperCase()))) {
+            commands.add(repairCommand);
+        }
+
+        for (LoadCommand loadCommand :
+                loadCommandService.getCommandsByIdTruckByStatus(idTruck,
+                        StatusCommand.valueOf(status.toUpperCase()))) {
+            commands.add(loadCommand);
+        }
+
+        for (UnloadCommand unloadCommand :
+                unloadCommandService.getCommandsByIdTruckByStatus(idTruck,
+                        StatusCommand.valueOf(status.toUpperCase()))) {
+            commands.add(unloadCommand);
+        }
+        return commands;
+
+    }
+
     @DeleteMapping("/go-to-command/{id}")
     public void deleteByIdGoToCommand(@PathVariable int id) {
         try {
@@ -191,8 +285,17 @@ public class CommandManagerController {
     @DeleteMapping("/load/{id}")
     public void deleteByIdLoadCommand(@PathVariable int id) {
         try {
-            repairCommandService.delete(id);
+            loadCommandService.delete(id);
         } catch (LoadCommandException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @DeleteMapping("/unload/{id}")
+    public void deleteByIdUnloadCommand(@PathVariable int id) {
+        try {
+            repairCommandService.delete(id);
+        } catch (UnloadCommandException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
