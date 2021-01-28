@@ -35,16 +35,10 @@ public class ThreadTask implements Runnable {
                 if(checkTimeFinish(command.getTimeFinish())){
                     MyLogger.defineInfoMessage(InfoType.CURRENT_COMMAND, new Object[]{
                             truck.getId(), truck.getName(), truck.getNumber(), command.getCommandType().name()});
-//                    System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
-//                            " ### " + truck.getId() + " the current command " +
-//                            command.getCommandType() + " is being executed now");
                     continue;
                 }else{
                     MyLogger.defineInfoMessage(InfoType.CURRENT_COMMAND_COMPLETED, new Object[]{
                             truck.getId(), truck.getName(), truck.getNumber(), command.getCommandType().name()});
-//                    System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
-//                            " ### " + truck.getId() + " the current command " +
-//                            command.getCommandType() + " has been completed. State needs to be changed");
                     //отправить тек комманду на выполнение для измен состояния грузовика
                     //сделать вып команду архивной
                     Invoker invoker = new Invoker();
@@ -66,8 +60,6 @@ public class ThreadTask implements Runnable {
             }else {
                 MyLogger.defineInfoMessage(InfoType.NOT_CURRENT_COMMAND, new Object[]{
                         truck.getId(), truck.getName(), truck.getNumber(), null});
-//                System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
-//                        " ### " + truck.getId() + " no current command ");
                 //найти команду на роль текущей по таймингу
                 //доинициализировать комманду
                 //сделать команду текущей
@@ -75,13 +67,9 @@ public class ThreadTask implements Runnable {
 
                 command = getNextCurrentCommand(truck.getId());
                 if(command==null){
-//                    System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
-//                            " ### " + truck.getId() + " there is no suitable command for the current role");
 
                 }
                 else{
-//                    System.out.println("Truck: " + truck.getName() +" ### " + truck.getNumber() +
-//                            " ### " + truck.getId() + " catching command for the current role");
 
                     Invoker invoker = new Invoker();
                     invoker.setDefaultProperties(new DefaultProperties());
