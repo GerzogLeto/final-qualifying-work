@@ -2,6 +2,7 @@ package com.example.fqw.entity;
 
 import com.example.fqw.entity.Identity;
 import com.example.fqw.entity.Position;
+import com.example.fqw.exception.GoToCommandException;
 import com.example.fqw.logic.CommandTypes;
 import com.example.fqw.logic.ICommand;
 import com.example.fqw.logic.StatusCommand;
@@ -109,6 +110,7 @@ public class GoToCommand extends Identity implements ICommand {
                     posFinish.getTotalDist() - posFinish.getDistFromStart();
             return;
         }
+        throw new GoToCommandException("Некорректный путь назначения в команде GOTO");
     }
 
     public void setUpDuration(int speed){

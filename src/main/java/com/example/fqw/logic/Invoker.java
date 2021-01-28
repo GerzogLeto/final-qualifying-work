@@ -1,10 +1,14 @@
 package com.example.fqw.logic;
 
 import com.example.fqw.entity.*;
+import com.example.fqw.exception.GoToCommandException;
 import com.example.fqw.repository.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Invoker {
     @Getter
@@ -99,7 +103,13 @@ public class Invoker {
             case GOTO -> {
                 GoToCommand goToCommand = (GoToCommand)command;
                 goToCommand.setPosStart(truck.getPosition());
-                goToCommand.setDistance();
+                try {
+                    goToCommand.setDistance();
+                }catch (GoToCommandException e){
+                    MyLogger.defineTrouble(ErrorType.GOTO_WRONG_POSITION, new Object[]{
+                            truck.getId(), goToCommand.getId(), e.getMessage()});
+                    return;
+                }
                 goToCommand.setUpDuration(Integer.parseInt(defaultProperties.
                         getProperties().getProperty("speed")));
                 goToCommand.setTimeFinish(goToCommand.getTimeStart().plusMinutes(goToCommand.getDuration()));
@@ -121,6 +131,12 @@ public class Invoker {
             }
             case LOAD -> {
                 LoadCommand loadCommand = (LoadCommand)command;
+                if(!(truck.getPosition().equals(freightRepo.findById(loadCommand.getIdFreight()).get().
+                        getPlaceOfLoadingCargo()))){
+                    MyLogger.defineTrouble(ErrorType.LOAD_WRONG_POS_TRUCK, new Object[]{
+                            truck.getId(), loadCommand.getId(), loadCommand.getIdFreight()});
+                    return;
+                }
                 loadCommand.setStatusCommand(StatusCommand.CURRENT);
                 loadCommandRepo.save(loadCommand);
                 break;
@@ -128,6 +144,12 @@ public class Invoker {
 
             case UNLOAD -> {
                 UnloadCommand unloadCommand = (UnloadCommand)command;
+                if(!(truck.getPosition().equals(freightRepo.findById(unloadCommand.getIdFreight()).get().
+                        getPlaceOfUnloadingCargo()))){
+                    MyLogger.defineTrouble(ErrorType.UNLOAD_POS_TRUCK, new Object[]{
+                            truck.getId(), unloadCommand.getId(), unloadCommand.getIdFreight()});
+                    return;
+                }
                 unloadCommand.setStatusCommand(StatusCommand.CURRENT);
                 unloadCommandRepo.save(unloadCommand);
                 break;

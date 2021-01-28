@@ -68,8 +68,8 @@ public class FreightController {
         return updated;
     }
 
-    @GetMapping //http://localhost:8080/freights?city=Moscow
-    public Iterable<Freight> getByLoadPlace(@RequestParam String city) {
+    @GetMapping("/{city}")
+    public Iterable<Freight> getByLoadPlace(@PathVariable String city) {
         Iterable<Freight> freights;
         try {
             freights  = service.findByLoadPlace(city);
