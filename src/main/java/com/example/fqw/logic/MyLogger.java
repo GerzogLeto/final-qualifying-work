@@ -51,4 +51,35 @@ public class MyLogger {
          }
       }
    }
+
+   public static void defineInfoMessage(InfoType infoType, Object[] arr){
+      Long truckId = (Long)arr[0];
+      String nameTruck = (String) arr[1];
+      String numberTruck = (String) arr[2];
+      String typeCommand = (String) arr[3];
+      switch (infoType){
+         case CURRENT_COMMAND -> {
+
+            MyLogger.logger.info("\n#####################" +
+                    "\nГрузовик " + nameTruck +" номер " + numberTruck + " c ИД:  " + truckId +
+                    "\nТекущая команда: " + typeCommand + " выполняется" +
+                    "\n#####################");
+            break;
+         }
+         case CURRENT_COMMAND_COMPLETED -> {
+            MyLogger.logger.info("\n#####################" +
+                    "\nГрузовик " + nameTruck +" номер " + numberTruck + " c ИД:  " + truckId +
+                    "\nТекущая команда: " + typeCommand + " выполнена" +
+                    "\n#####################");
+            break;
+         }
+         case NOT_CURRENT_COMMAND -> {
+            MyLogger.logger.info("\n#####################" +
+                    "\nГрузовик " + nameTruck +" номер " + numberTruck + " c ИД:  " + truckId +
+                    "\nТекущая команда: " + " нет текущих команд" +
+                    "\n#####################");
+            break;
+         }
+      }
+   }
 }

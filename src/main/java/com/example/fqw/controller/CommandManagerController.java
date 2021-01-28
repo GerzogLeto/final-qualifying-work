@@ -298,7 +298,7 @@ public class CommandManagerController {
     public void deleteByIdRepairCommand(@PathVariable int id) {
         try {
             repairCommandService.delete(id);
-        } catch (RefuelCommandException e) {
+        } catch (RepairCommandException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
@@ -315,7 +315,7 @@ public class CommandManagerController {
     @DeleteMapping("/unload/{id}")
     public void deleteByIdUnloadCommand(@PathVariable int id) {
         try {
-            repairCommandService.delete(id);
+            unloadCommandService.delete(id);
         } catch (UnloadCommandException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }

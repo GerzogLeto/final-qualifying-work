@@ -19,7 +19,7 @@ public class ScheduledTask {
         this.executor = executor;
         this.context = context;
     }
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void start(){
             ThreadTask task = context.getBean(ThreadTask.class);
             //task.set(some parameters...) для предеачи параметров в задачу
