@@ -18,6 +18,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+
+/** This class accepts http requests related to the entity truck
+ * to the url address http://localhost:8080/trucks. */
 @RestController
 @RequestMapping("/trucks")
 public class TruckController {
@@ -31,6 +34,27 @@ public class TruckController {
     @Autowired
     private ObjectMapper mapper;
 
+    /** This method accepts an http post request encoded in "application / x-www-form-urlencoded"
+     * to the url address http://localhost:8080/trucks.This method creates an object of type
+     * {@link com.example.fqw.entity.Truck Truck}
+     * from a json string. Gets an object of type  {@link com.example.fqw.entity.Position Position} from the database by identification number.
+     * Pass an object of type Position to the Truck object in the setter.
+     * <p>
+     * For example, the correct json string:
+     * <blockquote><pre>
+     * {
+     * 	"name": "Iveco_Turbostar",
+     * 	"number": "777",
+     * 	"capacity": "20",
+     * 	"mileage": "0",
+     * 	"amountOfFuel": "500"
+     * }
+     * </pre></blockquote>
+     * <p>
+     @param truck   takes a json string.
+     @param positionId  takes a identification number truck positions.
+     @return object of type Truck.
+     */
     @PostMapping
     public Truck addTruck (@RequestParam(value = "truck") String truck,
                              @RequestParam(value = "positionId") long positionId){

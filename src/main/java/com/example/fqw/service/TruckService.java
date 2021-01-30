@@ -68,7 +68,11 @@ public class TruckService {
         if(truck.getAmountOfFuel() < 0){
             throw new TruckException("Количество топлива не может быть меньше нуля");
         }
-
+        DefaultProperties defaultProperties = new DefaultProperties();
+        truck.setMileageNextRepair(truck.getMileage() +
+                Integer.parseInt(defaultProperties.getProperties().getProperty("mileage_between_repairs")));
+        truck.setFuelTankCapacity(Integer.
+                parseInt(defaultProperties.getProperties().getProperty("fuel_tank_capacity")));
         return repository.save(truck);
     }
 

@@ -61,7 +61,7 @@ public class ThreadTask implements Runnable {
                 MyLogger.defineInfoMessage(InfoType.NOT_CURRENT_COMMAND, new Object[]{
                         truck.getId(), truck.getName(), truck.getNumber(), null});
                 //найти команду на роль текущей по таймингу
-                //доинициализировать комманду
+                //доинициализировать комманду мсходя из текущего состояния грузовика
                 //сделать команду текущей
 
 
@@ -100,18 +100,18 @@ public class ThreadTask implements Runnable {
     public ICommand findCurrentCommand(long id) {
         Optional<GoToCommand> goToCommand = goToCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
+        if (!(goToCommand.isEmpty())) return goToCommand.get();
         Optional<RefuelCommand> refuelCommand = refuelCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
+        if (!(refuelCommand.isEmpty())) return refuelCommand.get();
         Optional<RepairCommand> repairCommand = repairCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
+        if (!(repairCommand.isEmpty())) return repairCommand.get();
         Optional<LoadCommand> loadCommand = loadCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
+        if (!(loadCommand.isEmpty())) return loadCommand.get();
         Optional<UnloadCommand> unloadCommand = unloadCommandRepository.findByIdTruckAndStatusCurrent(id,
                 StatusCommand.CURRENT);
-        if (!(goToCommand.isEmpty())) return goToCommand.get();
-        if (!(refuelCommand.isEmpty())) return refuelCommand.get();
-        if (!(repairCommand.isEmpty())) return repairCommand.get();
-        if (!(loadCommand.isEmpty())) return loadCommand.get();
         if (!(unloadCommand.isEmpty())) return unloadCommand.get();
         return null;
     }
